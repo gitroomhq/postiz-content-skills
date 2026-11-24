@@ -1,0 +1,105 @@
+# My AI content engine: SEO articles + Shorts on autopilot
+
+These are the two Claude Code skills I use to turn one article into:
+
+1. **An SEO article on my blog** that ranks, with keyword data from Google Search Console and DataForSEO, an AI cover in the style of the original, animated images, and publishing to WordPress.
+2. **A 30 second Short** with my AI twin presenting it, cinematic b-roll, split screens, burned-in captions and music, scheduled to all my channels with [Postiz](https://postiz.com).
+
+You give it a URL. It does the research, writing, images, video, editing and scheduling. You approve at a few checkpoints.
+
+I made everything generic: your product, your avatar, your blog, your channels. Nothing of mine is hard-coded.
+
+## What's inside
+
+| Skill | What it does |
+|---|---|
+| `/seo-builder-skill` | Source URL in, SEO article out. Loads the source (X articles, LinkedIn, any site), finds keywords from real data, writes the article in your angle, makes the cover and animated inline images, publishes to WordPress (as a draft by default). |
+| `/video-shorts` | Article in, scheduled Short out. Script (gate), b-roll (gate), HeyGen presenter, Remotion split screens, ffmpeg edit, captions, ElevenLabs music, SEO description, final review (gate), then Postiz scheduling at your next free slot. |
+| `/content-setup` | Installs everything, connects your accounts, picks your HeyGen avatar and fills in your brand profile with you. Also a health check. |
+| `heygen-avatar-video` | Your AI twin talking. The avatar and voice come from your config only, so the agent can't swap them by accident. |
+| `seedance-video` | Seedance 2.0 video in one command (image to video, or omni reference). Uploads local files, polls and downloads. |
+| `gpt-image` | GPT Image at max settings, plus a reference mode to match an existing cover's style. |
+| `remotion-shorts` | 1080x1920 renderer: fullscreen or top/bottom split. |
+
+Plus these third-party skills, installed for you: `postiz`, `agent-browser`, `dataforseo-cli`, `ai-seo`, `copy-editing`, `music` (ElevenLabs), `wp-rest-api`, and the `claude-seo` plugin.
+
+## What you need
+
+- macOS or Linux (Windows through WSL), [Claude Code](https://claude.com/claude-code), Node.js 18+, Python 3.9+.
+- Accounts. You only need the ones for the skill you use:
+
+| Account | Used for | SEO | Shorts |
+|---|---|---|---|
+| [Postiz](https://postiz.com) | scheduling + hosting files for Seedance | ✔ | ✔ |
+| [OpenAI](https://platform.openai.com) | cover and b-roll images | ✔ | ✔ |
+| [EvoLink](https://evolink.ai) | Seedance 2.0 video | ✔ | ✔ |
+| [DataForSEO](https://dataforseo.com) | keyword volume and difficulty | ✔ | optional |
+| WordPress (Application Password) | publishing | optional | |
+| Google Search Console | your real search queries | optional | optional |
+| [HeyGen](https://heygen.com) with your own avatar | the presenter | | ✔ |
+| [ElevenLabs](https://elevenlabs.io) | background music | | ✔ |
+
+No WordPress? The article is saved as HTML + Markdown + images in `~/content-skills-output/`.
+
+## Install
+
+```bash
+git clone https://github.com/gitroomhq/postiz-content-skills.git
+cd postiz-content-skills
+./install.sh
+```
+
+It installs ffmpeg, jq, the Postiz / agent-browser / DataForSEO / ElevenLabs CLIs, a Python environment, the third-party skills, the claude-seo plugin and the Remotion template. Re-run it any time to update.
+
+Then open Claude Code and type:
+
+```
+/content-setup
+```
+
+It asks for your keys, your HeyGen avatar, your WordPress author, your Postiz channels and a few lines about your product, and saves them in `~/.content-skills/`. Your keys stay on your machine (`~/.content-skills/.env`, readable only by you).
+
+## Use it
+
+```
+/seo-builder-skill https://x.com/someone/status/123...
+/video-shorts https://yourblog.com/blog/the-article
+```
+
+Check your setup any time:
+
+```bash
+bash ~/.claude/skills/content-setup/scripts/doctor.sh
+```
+
+## What a run costs (list prices, check each provider)
+
+- **SEO article:** a few dollars of images + ~3 Seedance clips at 4 s 1080p (about $2 each) + a few cents of DataForSEO.
+- **Short:** ~8 stills + ~8 Seedance clips (about $16) + HeyGen credits for ~30 s + one ElevenLabs track.
+
+## How it's configured
+
+- `~/.content-skills/brand.md`: your product, audience, the angle every piece leans into, links to strip, competitors never to link, words your AI voice mispronounces, WordPress author, Postiz channels, posting time and timezone.
+- `~/.content-skills/.env`: API keys, your HeyGen avatar ID, WordPress URL, Search Console property.
+
+Edit them by hand or run `/content-setup` again.
+
+## Good to know
+
+- The skills stop at approval gates (script, b-roll, final video) before spending more or posting anything.
+- Articles publish as **drafts** until you set `Publish status: publish` in brand.md.
+- Remotion is free for individuals and companies of up to 3 people. Bigger teams need a [Remotion license](https://www.remotion.dev/license).
+- Clips and images are generated by AI. Review them before you post.
+
+## Credits
+
+Third-party skills installed by `install.sh`, all from their original authors:
+[gitroomhq/postiz-agent](https://github.com/gitroomhq/postiz-agent),
+[vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser),
+[alexgusevski/dataforseo-cli](https://github.com/alexgusevski/dataforseo-cli),
+[coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills),
+[elevenlabs/skills](https://github.com/elevenlabs/skills),
+[nevo-david/wordpress-skill](https://github.com/nevo-david/wordpress-skill),
+[AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo).
+
+Made by Nevo David, founder of [Postiz](https://postiz.com). MIT license.
